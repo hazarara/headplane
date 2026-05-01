@@ -2,6 +2,13 @@
 
 > A feature-complete web UI for [Headscale](https://headscale.net)
 
+> [!NOTE]
+> This is a fork of [tale/headplane](https://github.com/tale/headplane) with an
+> added Routes column on the machines list that shows each node's subnet routes
+> as chips and lets you approve/disable them inline (click to toggle).
+> See branch [`routes-column`](https://github.com/hazarara/headplane/tree/routes-column).
+> Image: `ghcr.io/hazarara/headplane:routes-dev`.
+
 <picture>
     <source
         media="(prefers-color-scheme: dark)"
