@@ -9,3 +9,5 @@
 .dockerignore
 .env
 Dockerfile
+/config.dev.yaml
+/.dev-data

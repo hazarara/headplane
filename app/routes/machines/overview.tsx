@@ -340,6 +340,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
                   ) : undefined}
                 </div>
               </th>
+              <th className="pb-2 text-xs font-bold uppercase">Routes</th>
               {/* We only want to show the version column if there are agents */}
               {loaderData.agent !== undefined ? (
                 <th
@@ -414,7 +415,7 @@ export default function Page({ loaderData }: Route.ComponentProps) {
               <tr>
                 <td
                   className="py-8 text-center text-mist-500"
-                  colSpan={loaderData.agent !== undefined ? 6 : 5}
+                  colSpan={loaderData.agent !== undefined ? 7 : 6}
                 >
                   No machines match the current filters
                 </td>

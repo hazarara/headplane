@@ -1,5 +1,6 @@
 import { ChevronDown, Copy } from "lucide-react";
 import { useMemo } from "react";
+import { useFetcher } from "react-router";
 
 import Chip from "~/components/chip";
 import Link from "~/components/link";
@@ -40,6 +41,22 @@ export default function MachineRow({
   supportsNodeOwnerChange,
 }: Props) {
   const uiTags = useMemo(() => uiTagsForNode(node, isAgent), [node, isAgent]);
+  const routesFetcher = useFetcher();
+  const pendingRoute =
+    routesFetcher.state !== "idle" &&
+    routesFetcher.formData?.get("action_id") === "update_routes" &&
+    routesFetcher.formData?.get("node_id") === node.id
+      ? routesFetcher.formData?.get("routes")?.toString()
+      : undefined;
+
+  const toggleRoute = (route: string, enabled: boolean) => {
+    const form = new FormData();
+    form.set("action_id", "update_routes");
+    form.set("node_id", node.id);
+    form.set("routes", route);
+    form.set("enabled", String(enabled));
+    routesFetcher.submit(form, { method: "POST" });
+  };
 
   const ipOptions = useMemo(() => {
     if (magic) {
@@ -100,6 +117,57 @@ export default function MachineRow({
             </MenuContent>
           </Menu>
         </div>
+      </td>
+      <td className="py-2 pr-2">
+        {node.customRouting.subnetApprovedRoutes.length === 0 &&
+        node.customRouting.subnetWaitingRoutes.length === 0 ? (
+          <span className="text-sm opacity-40">—</span>
+        ) : (
+          <div className="flex flex-wrap gap-1">
+            {node.customRouting.subnetApprovedRoutes.map((route) => {
+              const isPending = pendingRoute === route;
+              return (
+                <button
+                  className={cn(
+                    "rounded-sm px-1.5 py-0.5 font-mono text-xs",
+                    "bg-mist-100 dark:bg-mist-800",
+                    "cursor-pointer hover:bg-mist-200 dark:hover:bg-mist-700",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                    isPending && "opacity-50",
+                  )}
+                  disabled={isDisabled || isPending}
+                  key={`a-${route}`}
+                  onClick={() => toggleRoute(route, false)}
+                  title={isDisabled ? route : "Click to disable"}
+                  type="button"
+                >
+                  {route}
+                </button>
+              );
+            })}
+            {node.customRouting.subnetWaitingRoutes.map((route) => {
+              const isPending = pendingRoute === route;
+              return (
+                <button
+                  className={cn(
+                    "rounded-sm px-1.5 py-0.5 font-mono text-xs opacity-50",
+                    "border border-dashed border-mist-300 dark:border-mist-700",
+                    "cursor-pointer hover:opacity-80",
+                    "disabled:cursor-not-allowed",
+                    isPending && "opacity-30",
+                  )}
+                  disabled={isDisabled || isPending}
+                  key={`w-${route}`}
+                  onClick={() => toggleRoute(route, true)}
+                  title={isDisabled ? "Waiting for approval" : "Click to approve"}
+                  type="button"
+                >
+                  {route}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </td>
       {/* We pass undefined when agents are not enabled */}
       {isAgent !== undefined ? (
